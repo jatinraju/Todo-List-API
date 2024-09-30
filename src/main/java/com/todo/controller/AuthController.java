@@ -18,23 +18,19 @@ import com.todo.pojo.User;
 import com.todo.pojo.UserRes;
 import com.todo.pojo.auth.AuthRequest;
 import com.todo.pojo.auth.AuthResponse;
-import com.todo.service.interfaces.impl.UserServiceImpl;
-import com.todo.util.JwtUtil;
+import com.todo.service.interfaces.UserService;
 
 @RestController
 @RequestMapping(EndPoints.V1)
 public class AuthController {
 
 	@Autowired
-	private UserServiceImpl userService;
+	private UserService userService;
 
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@Autowired
-	private JwtUtil jwtUtil;
-
-	@PostMapping(EndPoints.REGISTER)
+	@PostMapping(EndPoints.REGISTER_USER)
 	public ResponseEntity<AuthResponse> doRegister(@RequestBody User user) {
 		System.out.println("AuthController.doRegister() || user: " + user);
 
@@ -55,7 +51,7 @@ public class AuthController {
 		return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
 	}
 
-	@PostMapping(EndPoints.LOGIN)
+	@PostMapping(EndPoints.LOGIN_USER)
 	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
 		System.out.println("AuthController.login() || authRequest ");
 
