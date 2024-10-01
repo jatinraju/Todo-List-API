@@ -67,7 +67,7 @@ public class AuthController {
 	@GetMapping("/hello")
 	public ResponseEntity<String> getMessage() {
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println("email stored in the token ||" + email);
-		return new ResponseEntity<>("Hello from AuthController", HttpStatus.OK);
+//		System.out.println("email stored in the token ||" + email);
+		return new ResponseEntity<>("Hi!, " + email, HttpStatus.OK);
 	}
 }

@@ -31,25 +31,30 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 		String email = null;
 		String jwt = null;
+		try {
 
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-			jwt = authorizationHeader.substring(7);
-			email = jwtUtil.extractEmail(jwt);
+			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+				jwt = authorizationHeader.substring(7);
+				email = jwtUtil.extractEmail(jwt);
 
-			// Print the email to the console
-			System.out.println("Extracted Email: " + email);
-		}
-
-		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-			System.out.println(userDetails.getUsername());
-
-			if (jwtUtil.validateToken(jwt, email)) {
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+				// Print the email to the console
+				System.out.println("Extracted Email: " + email);
 			}
+
+			if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+				System.out.println(userDetails.getUsername());
+
+				if (jwtUtil.validateToken(jwt, email)) {
+					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+							userDetails, null, userDetails.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+				}
+			}
+			chain.doFilter(request, response);
+		} catch (Exception ex) {
+			// TODO : throw exception with proper message here
+			System.out.println(ex.getLocalizedMessage());
 		}
-		chain.doFilter(request, response);
 	}
 }

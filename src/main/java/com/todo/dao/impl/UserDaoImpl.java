@@ -53,4 +53,14 @@ public class UserDaoImpl implements UserDao {
 		return null;
 	}
 
+	@Override
+	public UserDTO getUserByEmail(String email) {
+		Optional<UserEntity> op = userRepo.findByEmail(email);
+		if (!op.isEmpty()) {
+			UserDTO userDto = modelMapper.map(op.get(), UserDTO.class);
+			return userDto;
+		}
+		return null;
+	}
+
 }

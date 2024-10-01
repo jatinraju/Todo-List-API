@@ -8,4 +8,6 @@ public interface UserDao {
 
 	UserDTO authenticateUser(AuthRequestDTO authRequestDTO);
 
+	UserDTO getUserByEmail(String email);
+
 }
