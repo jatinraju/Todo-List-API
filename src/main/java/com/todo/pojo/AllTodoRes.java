@@ -1,4 +1,6 @@
-package com.todo.dto;
+package com.todo.pojo;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TodoDTO {
-	private Long id;
-	private Long userId;
-	private String title;
-	private String description;
+public class AllTodoRes {
+	private List<TodoRes> data;
+	private int page;
+	private int limit;
+	private int total;
 }

@@ -7,5 +7,6 @@ public class EndPoints {
 	public static final String LOGIN_USER = "/login";
 	public static final String V1_TODO = "/v1/todo";
 	public static final String UPDATE_TODO = "/{id}";
+	public static final String DELETE_TODO = "/{id}";
 
 }

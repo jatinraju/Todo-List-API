@@ -1,5 +1,7 @@
 package com.todo.service.interfaces.impl;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +11,7 @@ import com.todo.dao.TodoDao;
 import com.todo.dao.UserDao;
 import com.todo.dto.TodoDTO;
 import com.todo.dto.UserDTO;
+import com.todo.pojo.TodoRes;
 import com.todo.service.interfaces.TodoService;
 
 @Service
@@ -40,18 +43,51 @@ public class TodoServiceImpl implements TodoService {
 	@Override
 	public TodoDTO updateTodo(TodoDTO todoDto) {
 		System.out.println("TodoServiceImpl.updateTodo() | todoDto: " + todoDto);
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		// Getting details of User and Todo from the Database;
-		UserDTO userDto = userDao.getUserByEmail(email);
-		TodoDTO oldTodoDto = todoDao.getTodoById(todoDto);
-
-		System.out.println("UserDTO: " + userDto + "\n TodoDTO: " + oldTodoDto);
-		if (oldTodoDto != null && userDto.getId().equals(oldTodoDto.getUserId())) {
-			TodoDTO updatedTodoDto = todoDao.updateTodo(todoDto);
-			return updatedTodoDto;
+		if (isMatchingTodoAndUser(todoDto)) {
+			return todoDao.updateTodo(todoDto);
 		}
 		System.out.println("user id mismatch with todo userid");
 		return null;
 	}
 
+	@Override
+	public boolean deleteTodo(Long id) {
+		System.out.println("TodoServiceImpl.deleteTodo() | id: " + id);
+		TodoDTO tempTodoDto = TodoDTO.builder().id(id).build();
+
+		TodoDTO resTodoDto = todoDao.getTodoById(tempTodoDto);
+		if (resTodoDto != null && isMatchingTodoAndUser(resTodoDto)) {
+			boolean res = todoDao.deleteTodo(id);
+			return res;
+		}
+
+		// throw exception here todo not found or user idd not match with todo.
+		return false;
+	}
+
+	// Checking todo userid and user id is matching or not
+	public boolean isMatchingTodoAndUser(TodoDTO todoDto) {
+		System.out.println("TodoServiceImpl.isMatichingTodoAndUser() | todoDto: " + todoDto);
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		// Getting details of User and Todo from the Database;
+		UserDTO userDto = userDao.getUserByEmail(email);
+		TodoDTO oldTodoDto = todoDao.getTodoById(todoDto);
+		System.out.println("UserDTO: " + userDto + "\n TodoDTO: " + oldTodoDto);
+
+		return oldTodoDto != null && userDto.getId().equals(oldTodoDto.getUserId());
+	}
+
+	@Override
+	public List<TodoRes> getAllTodos(int page, int limit) {
+		System.out.println("TodoServiceImpl.getAllTodos() | page: " + page + " || limit: " + limit);
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		// get the user id from the database
+		UserDTO userDto = userDao.getUserByEmail(email);
+		page = (page - 1) * 10;
+		List<TodoRes> listDto = todoDao.getAllTodos(userDto.getId(), page, limit);
+
+		return listDto;
+	}
 }
