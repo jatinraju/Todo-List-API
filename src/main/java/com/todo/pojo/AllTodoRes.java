@@ -15,5 +15,5 @@ public class AllTodoRes {
 	private List<TodoRes> data;
 	private int page;
 	private int limit;
-	private int total;
+	private long total;
 }

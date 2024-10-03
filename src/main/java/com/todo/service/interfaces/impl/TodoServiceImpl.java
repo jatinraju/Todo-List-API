@@ -1,7 +1,5 @@
 package com.todo.service.interfaces.impl;
 
-import java.util.List;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,7 +9,7 @@ import com.todo.dao.TodoDao;
 import com.todo.dao.UserDao;
 import com.todo.dto.TodoDTO;
 import com.todo.dto.UserDTO;
-import com.todo.pojo.TodoRes;
+import com.todo.pojo.AllTodoRes;
 import com.todo.service.interfaces.TodoService;
 
 @Service
@@ -79,15 +77,20 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public List<TodoRes> getAllTodos(int page, int limit) {
+	public AllTodoRes getAllTodos(int page, int limit) {
 		System.out.println("TodoServiceImpl.getAllTodos() | page: " + page + " || limit: " + limit);
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		// get the user id from the database
 		UserDTO userDto = userDao.getUserByEmail(email);
 		page = (page - 1) * 10;
-		List<TodoRes> listDto = todoDao.getAllTodos(userDto.getId(), page, limit);
+		AllTodoRes allTodoRes = todoDao.getAllTodos(userDto.getId(), page, limit);
+		if (allTodoRes != null) {
+			allTodoRes.setPage((page / 10) + 1);
+			allTodoRes.setLimit(limit);
+			return allTodoRes;
+		}
 
-		return listDto;
+		return null;
 	}
 }

@@ -1,9 +1,7 @@
 package com.todo.service.interfaces;
 
-import java.util.List;
-
 import com.todo.dto.TodoDTO;
-import com.todo.pojo.TodoRes;
+import com.todo.pojo.AllTodoRes;
 
 public interface TodoService {
 
@@ -13,6 +11,6 @@ public interface TodoService {
 
 	boolean deleteTodo(Long id);
 
-	List<TodoRes> getAllTodos(int page, int limit);
+	AllTodoRes getAllTodos(int page, int limit);
 
 }

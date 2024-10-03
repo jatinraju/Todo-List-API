@@ -1,7 +1,5 @@
 package com.todo.controller;
 
-import java.util.List;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,9 +34,9 @@ public class TodoController {
 	@GetMapping
 	public ResponseEntity<AllTodoRes> getAllTodos(@RequestParam int page, @RequestParam int limit) {
 		System.out.println("TodoController.getAllTodos() | page: " + page + " || limit : " + limit);
-		List<TodoRes> resList = todoService.getAllTodos(page, limit);
-		AllTodoRes allTodoRes = AllTodoRes.builder().data(resList).page(page).limit(limit).total(0).build();
-		return new ResponseEntity<>(allTodoRes, HttpStatus.OK);
+		AllTodoRes allTodoFinalRes = todoService.getAllTodos(page, limit);
+		// TODO: if DAta not found return null object with 204 No Content
+		return new ResponseEntity<>(allTodoFinalRes, HttpStatus.OK);
 	}
 
 	@PostMapping

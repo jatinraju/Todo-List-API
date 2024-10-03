@@ -1,8 +1,8 @@
 package com.todo.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import com.todo.dao.TodoDao;
 import com.todo.dao.repo.TodoRepository;
 import com.todo.dto.TodoDTO;
 import com.todo.entity.TodoEntity;
+import com.todo.pojo.AllTodoRes;
 import com.todo.pojo.TodoRes;
 
 @Component
@@ -84,40 +85,29 @@ public class TodoDaoImpl implements TodoDao {
 	}
 
 	@Override
-	public List<TodoRes> getAllTodos(Long userId, int page, int limit) {
+	public AllTodoRes getAllTodos(Long userId, int page, int limit) {
 		System.out
 				.println("TodoDaoImpl.getAllTodos() | userId: " + userId + " || page: " + page + " || limit: " + limit);
 
 		List<Object[]> todosAndCount = todoRepo.getAllTodos(userId, page, limit);
 		System.out.println(" List<Object[]> todosAndCount: " + todosAndCount);
+
 		if (!todosAndCount.isEmpty()) {
-			// extract list of todos and map it to TodoDTO
-			List<TodoDTO> todos = todosAndCount.stream().map(result -> modelMapper.map(result, TodoDTO.class))
-					.collect(Collectors.toList());
-			System.out.println(todos);
+			List<TodoRes> finalList = new ArrayList<>();
+			for (Object[] entity : todosAndCount) {
+				TodoRes todoRes = TodoRes.builder().id(Long.parseLong(entity[0].toString())).title(entity[1].toString())
+						.description(entity[2].toString()).build();
+				System.out.println(todoRes);
+				finalList.add(todoRes);
+			}
 
-			// TODO: Pending extract todoDTO from Object[]
-			// extract total count of todos by single user
-			System.out.println(todosAndCount.get(0)[0]);
-			System.out.println(todosAndCount.get(1)[0]);
-			System.out.println(todosAndCount.get(2)[0]);
-			System.out.println(todosAndCount.get(3)[0]);
-			System.out.println(todosAndCount.get(4)[0]);
-			System.out.println(todosAndCount.get(5)[0]);
-			System.out.println(todosAndCount.get(6)[0]);
-			System.out.println(todosAndCount.get(7)[0]);
-			System.out.println(todosAndCount.get(8)[0]);
-			System.out.println(todosAndCount.get(9)[0]);
-
-			// done with count;
-			int totalCount = ((Number) todosAndCount.get(0)[todosAndCount.get(0).length - 1]).intValue();
+			long totalCount = ((Number) todosAndCount.get(0)[todosAndCount.get(0).length - 1]).longValue();
 			System.out.println(totalCount);
+			return AllTodoRes.builder().data(finalList).total(totalCount).build();
 		}
 
 		return null;
 
-//		return list.stream() // Stream<TodoEntity>
-//				.map(entity -> modelMapper.map(entity, TodoRes.class)).collect(Collectors.toList());
 	}
 
 }

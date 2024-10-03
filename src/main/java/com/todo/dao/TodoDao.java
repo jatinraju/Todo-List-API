@@ -1,9 +1,7 @@
 package com.todo.dao;
 
-import java.util.List;
-
 import com.todo.dto.TodoDTO;
-import com.todo.pojo.TodoRes;
+import com.todo.pojo.AllTodoRes;
 
 public interface TodoDao {
 
@@ -15,5 +13,5 @@ public interface TodoDao {
 
 	boolean deleteTodo(Long id);
 
-	List<TodoRes> getAllTodos(Long userId, int page, int limit);
+	AllTodoRes getAllTodos(Long userId, int page, int limit);
 }
