@@ -11,6 +11,6 @@ public interface TodoService {
 
 	boolean deleteTodo(Long id);
 
-	AllTodoRes getAllTodos(int page, int limit);
+	AllTodoRes getTodos(int page, int limit, String filter);
 
 }

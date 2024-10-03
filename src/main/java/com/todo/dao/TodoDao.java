@@ -14,4 +14,6 @@ public interface TodoDao {
 	boolean deleteTodo(Long id);
 
 	AllTodoRes getAllTodos(Long userId, int page, int limit);
+
+	AllTodoRes getAllFilteredTodos(Long userId, int page, int limit, String filter);
 }

@@ -31,12 +31,21 @@ public class TodoController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+//	@GetMapping
+//	public ResponseEntity<AllTodoRes> getAllTodos(@RequestParam int page, @RequestParam int limit) {
+//		System.out.println("TodoController.getAllTodos() | page: " + page + " || limit : " + limit);
+//		AllTodoRes allTodoFinalRes = todoService.getAllTodos(page, limit);
+//		// TODO: if DAta not found return null object with 204 No Content
+//		return new ResponseEntity<>(allTodoFinalRes, HttpStatus.OK);
+//	}
+
 	@GetMapping
-	public ResponseEntity<AllTodoRes> getAllTodos(@RequestParam int page, @RequestParam int limit) {
-		System.out.println("TodoController.getAllTodos() | page: " + page + " || limit : " + limit);
-		AllTodoRes allTodoFinalRes = todoService.getAllTodos(page, limit);
-		// TODO: if DAta not found return null object with 204 No Content
-		return new ResponseEntity<>(allTodoFinalRes, HttpStatus.OK);
+	public ResponseEntity<AllTodoRes> getAllTodos(@RequestParam int page, @RequestParam int limit,
+			@RequestParam(required = false) String filter) {
+		System.out.println(
+				"TodoController.getAllTodos() | page: " + page + " || limit: " + limit + " || filter: " + filter);
+		AllTodoRes allFilteredTodoFinalRes = todoService.getTodos(page, limit, filter);
+		return new ResponseEntity<>(allFilteredTodoFinalRes, HttpStatus.OK);
 	}
 
 	@PostMapping

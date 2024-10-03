@@ -90,24 +90,32 @@ public class TodoDaoImpl implements TodoDao {
 				.println("TodoDaoImpl.getAllTodos() | userId: " + userId + " || page: " + page + " || limit: " + limit);
 
 		List<Object[]> todosAndCount = todoRepo.getAllTodos(userId, page, limit);
-		System.out.println(" List<Object[]> todosAndCount: " + todosAndCount);
+		return generateResponse(todosAndCount);
+	}
 
-		if (!todosAndCount.isEmpty()) {
+	@Override
+	public AllTodoRes getAllFilteredTodos(Long userId, int page, int limit, String filter) {
+		System.out.println("TodoDaoImpl.getAllFilteredTodos() | userId: " + userId + " || page: " + page + " || limit: "
+				+ limit + " || filter: " + filter);
+
+		List<Object[]> filteredTodosAndCount = todoRepo.getAllFilteredTodos(userId, page, limit, filter);
+		return generateResponse(filteredTodosAndCount);
+	}
+
+	private AllTodoRes generateResponse(List<Object[]> listOfObject) {
+		if (!listOfObject.isEmpty()) {
 			List<TodoRes> finalList = new ArrayList<>();
-			for (Object[] entity : todosAndCount) {
+			for (Object[] entity : listOfObject) {
 				TodoRes todoRes = TodoRes.builder().id(Long.parseLong(entity[0].toString())).title(entity[1].toString())
 						.description(entity[2].toString()).build();
-				System.out.println(todoRes);
 				finalList.add(todoRes);
 			}
 
-			long totalCount = ((Number) todosAndCount.get(0)[todosAndCount.get(0).length - 1]).longValue();
-			System.out.println(totalCount);
+			long totalCount = ((Number) listOfObject.get(0)[listOfObject.get(0).length - 1]).longValue();
 			return AllTodoRes.builder().data(finalList).total(totalCount).build();
 		}
-
+		System.out.println("getting null????");
 		return null;
-
 	}
 
 }

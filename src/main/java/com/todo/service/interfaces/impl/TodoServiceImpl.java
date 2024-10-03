@@ -63,6 +63,27 @@ public class TodoServiceImpl implements TodoService {
 		return false;
 	}
 
+	@Override
+	public AllTodoRes getTodos(int page, int limit, String filter) {
+		System.out.println(
+				"TodoServiceImpl.getTodos() | page: " + page + " || limit: " + limit + " || filter: " + filter);
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		UserDTO userDto = userDao.getUserByEmail(email);
+		page = (page - 1) * 10;
+		AllTodoRes allTodoRes;
+		if (filter == null || filter.isEmpty()) {
+			allTodoRes = todoDao.getAllTodos(userDto.getId(), page, limit);
+		} else {
+			allTodoRes = todoDao.getAllFilteredTodos(userDto.getId(), page, limit, filter);
+		}
+		if (allTodoRes != null) {
+			allTodoRes.setPage((page / 10) + 1);
+			allTodoRes.setLimit(limit);
+			return allTodoRes;
+		}
+		return null;
+	}
+
 	// Checking todo userid and user id is matching or not
 	public boolean isMatchingTodoAndUser(TodoDTO todoDto) {
 		System.out.println("TodoServiceImpl.isMatichingTodoAndUser() | todoDto: " + todoDto);
@@ -74,23 +95,5 @@ public class TodoServiceImpl implements TodoService {
 		System.out.println("UserDTO: " + userDto + "\n TodoDTO: " + oldTodoDto);
 
 		return oldTodoDto != null && userDto.getId().equals(oldTodoDto.getUserId());
-	}
-
-	@Override
-	public AllTodoRes getAllTodos(int page, int limit) {
-		System.out.println("TodoServiceImpl.getAllTodos() | page: " + page + " || limit: " + limit);
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
-		// get the user id from the database
-		UserDTO userDto = userDao.getUserByEmail(email);
-		page = (page - 1) * 10;
-		AllTodoRes allTodoRes = todoDao.getAllTodos(userDto.getId(), page, limit);
-		if (allTodoRes != null) {
-			allTodoRes.setPage((page / 10) + 1);
-			allTodoRes.setLimit(limit);
-			return allTodoRes;
-		}
-
-		return null;
 	}
 }
