@@ -31,9 +31,19 @@ public class UserServiceImpl implements UserService {
 		System.out.println("UserServiceImpl.authenticateUser() || authRequestDTO: "); // password is visible here
 		UserDTO userDtoRes = userDao.authenticateUser(authRequestDTO);
 		if (userDtoRes != null) {
-			String generatedToken = jwtUtil.generateToken(userDtoRes.getEmail());
-			return AuthResponse.builder().email(userDtoRes.getEmail()).token(generatedToken).build();
+			String generatedAccessToken = jwtUtil.generateAccessToken(userDtoRes.getEmail());
+			String generatedRefreshToken = jwtUtil.generateRefreshToken(userDtoRes.getEmail());
+			return AuthResponse.builder().email(userDtoRes.getEmail()).access_token(generatedAccessToken)
+					.refresh_token(generatedRefreshToken).build();
 		}
 		return null;
 	}
+
+	@Override
+	public AuthResponse refreshAccessToken(String refreshToken) {
+		// TODO Auto-generated method stub
+		// implement access token and refresh token mechanism
+		return null;
+	}
+
 }

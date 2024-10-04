@@ -17,16 +17,22 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
 
 	private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-	private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+	private static final long ACCESS_TOKEN_EXPIRATION_TIME = 15 * 60 * 1000; // 15 MINUTES
+	private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000; // 1 HOUR
 
-	public String generateToken(String email) {
+	public String generateAccessToken(String email) {
 		Map<String, Object> claims = new HashMap<>();
-		return createToken(claims, email);
+		return createAccessToken(claims, email, ACCESS_TOKEN_EXPIRATION_TIME);
 	}
 
-	private String createToken(Map<String, Object> claims, String subject) {
+	public String generateRefreshToken(String email) {
+		Map<String, Object> claims = new HashMap<>();
+		return createAccessToken(claims, email, REFRESH_TOKEN_EXPIRATION_TIME);
+	}
+
+	private String createAccessToken(Map<String, Object> claims, String subject, long time) {
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).signWith(key).compact();
+				.setExpiration(new Date(System.currentTimeMillis() + time)).signWith(key).compact();
 	}
 
 	public String extractEmail(String token) {
