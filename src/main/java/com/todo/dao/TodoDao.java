@@ -16,4 +16,8 @@ public interface TodoDao {
 	AllTodoRes getAllTodos(Long userId, int page, int limit);
 
 	AllTodoRes getAllFilteredTodos(Long userId, int page, int limit, String filter);
+
+	AllTodoRes getAllSortedTodos(Long userId, int page, int limit, String odr);
+
+	AllTodoRes getAllFilteredAndSortedTodos(Long userId, int page, int limit, String filter, String odr);
 }

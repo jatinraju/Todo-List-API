@@ -41,10 +41,10 @@ public class TodoController {
 
 	@GetMapping
 	public ResponseEntity<AllTodoRes> getAllTodos(@RequestParam int page, @RequestParam int limit,
-			@RequestParam(required = false) String filter) {
-		System.out.println(
-				"TodoController.getAllTodos() | page: " + page + " || limit: " + limit + " || filter: " + filter);
-		AllTodoRes allFilteredTodoFinalRes = todoService.getTodos(page, limit, filter);
+			@RequestParam(required = false) String filter, @RequestParam(required = false) String sortDirection) {
+		System.out.println("TodoController.getAllTodos() | page: " + page + " || limit: " + limit + " || filter: "
+				+ filter + " || sortDirection: " + sortDirection);
+		AllTodoRes allFilteredTodoFinalRes = todoService.getTodos(page, limit, filter, sortDirection);
 		return new ResponseEntity<>(allFilteredTodoFinalRes, HttpStatus.OK);
 	}
 

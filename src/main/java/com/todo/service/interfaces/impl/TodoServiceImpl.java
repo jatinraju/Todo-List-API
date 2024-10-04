@@ -64,18 +64,25 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public AllTodoRes getTodos(int page, int limit, String filter) {
-		System.out.println(
-				"TodoServiceImpl.getTodos() | page: " + page + " || limit: " + limit + " || filter: " + filter);
+	public AllTodoRes getTodos(int page, int limit, String filter, String odr) {
+		System.out.println("TodoServiceImpl.getTodos() | page: " + page + " || limit: " + limit + " || filter: "
+				+ filter + " || odr: " + odr);
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserDTO userDto = userDao.getUserByEmail(email);
 		page = (page - 1) * 10;
 		AllTodoRes allTodoRes;
-		if (filter == null || filter.isEmpty()) {
+
+		if ((filter == null || filter.isEmpty()) && (odr == null || odr.isEmpty())) {
 			allTodoRes = todoDao.getAllTodos(userDto.getId(), page, limit);
-		} else {
+		} else if (filter == null || filter.isEmpty()) {
+			allTodoRes = todoDao.getAllSortedTodos(userDto.getId(), page, limit, odr);
+		} else if (odr == null || odr.isEmpty()) {
 			allTodoRes = todoDao.getAllFilteredTodos(userDto.getId(), page, limit, filter);
+		} else {
+			allTodoRes = todoDao.getAllFilteredAndSortedTodos(userDto.getId(), page, limit, filter, odr);
+
 		}
+
 		if (allTodoRes != null) {
 			allTodoRes.setPage((page / 10) + 1);
 			allTodoRes.setLimit(limit);

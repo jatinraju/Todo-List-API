@@ -102,6 +102,33 @@ public class TodoDaoImpl implements TodoDao {
 		return generateResponse(filteredTodosAndCount);
 	}
 
+	@Override
+	public AllTodoRes getAllSortedTodos(Long userId, int page, int limit, String odr) {
+		System.out.println("TodoDaoImpl.getAllSortedTodos() | userId: " + userId + " || page: " + page + " || limit: "
+				+ limit + " || odr: " + odr);
+		List<Object[]> sortedTodosAndCount;
+		if (odr.equalsIgnoreCase("asc")) {
+			sortedTodosAndCount = todoRepo.getAllSortedByTodosASC(userId, page, limit);
+		} else {
+			sortedTodosAndCount = todoRepo.getAllSortedByTodosDESC(userId, page, limit);
+		}
+		return generateResponse(sortedTodosAndCount);
+	}
+
+	@Override
+	public AllTodoRes getAllFilteredAndSortedTodos(Long userId, int page, int limit, String filter, String odr) {
+		System.out.println("TodoDaoImpl.getAllFilteredAndSortedTodos() | userId: " + userId + " || page: " + page
+				+ " || limit: " + limit + " || filter: " + filter + " || odr: " + odr);
+		List<Object[]> filteredAndSortedTodosAndCount;
+		if (odr.equalsIgnoreCase("asc")) {
+			filteredAndSortedTodosAndCount = todoRepo.getAllFilteredAndSortedTodosASC(userId, page, limit, filter);
+		} else {
+			filteredAndSortedTodosAndCount = todoRepo.getAllFilteredAndSortedTodosDESC(userId, page, limit, filter);
+		}
+		return generateResponse(filteredAndSortedTodosAndCount);
+
+	}
+
 	private AllTodoRes generateResponse(List<Object[]> listOfObject) {
 		if (!listOfObject.isEmpty()) {
 			List<TodoRes> finalList = new ArrayList<>();
