@@ -17,7 +17,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
 
 	private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-	private static final long ACCESS_TOKEN_EXPIRATION_TIME = 15 * 60 * 1000; // 15 MINUTES
+	private static final long ACCESS_TOKEN_EXPIRATION_TIME = 10 * 1000; // 15 MINUTES
 	private static final long REFRESH_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000; // 1 HOUR
 
 	public String generateAccessToken(String email) {

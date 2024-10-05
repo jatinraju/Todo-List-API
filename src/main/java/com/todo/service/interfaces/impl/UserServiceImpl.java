@@ -1,12 +1,14 @@
 package com.todo.service.interfaces.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.todo.dao.UserDao;
 import com.todo.dto.AuthRequestDTO;
 import com.todo.dto.UserDTO;
 import com.todo.pojo.auth.AuthResponse;
+import com.todo.pojo.auth.RefreshTokenRes;
 import com.todo.service.interfaces.UserService;
 import com.todo.util.JwtUtil;
 
@@ -40,10 +42,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public AuthResponse refreshAccessToken(String refreshToken) {
-		// TODO Auto-generated method stub
-		// implement access token and refresh token mechanism
-		return null;
-	}
+	public RefreshTokenRes refreshAccessToken() {
+		System.out.println("UserServiceImpl.refreshAccessToken()");
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
+		System.out.println("Refresh Token Request for Email: " + email);
+		String generatedRefreshToken = jwtUtil.generateRefreshToken(email);
+		return RefreshTokenRes.builder().access_token(generatedRefreshToken).build();
+	}
 }

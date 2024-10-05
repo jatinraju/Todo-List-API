@@ -18,6 +18,7 @@ import com.todo.pojo.User;
 import com.todo.pojo.UserRes;
 import com.todo.pojo.auth.AuthRequest;
 import com.todo.pojo.auth.AuthResponse;
+import com.todo.pojo.auth.RefreshTokenRes;
 import com.todo.service.interfaces.UserService;
 
 @RestController
@@ -62,6 +63,13 @@ public class AuthController {
 		System.out.println("AuthResponse || authResponse: " + authResponse);
 		// TODO: Check response if null then throw Exception here
 		return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+	}
+
+	@PostMapping(EndPoints.REFRESH_TOKEN)
+	public ResponseEntity<RefreshTokenRes> getRefreshToken() {
+		System.out.println("AuthController.getRefreshToken()");
+		RefreshTokenRes refreshTokenRes = userService.refreshAccessToken();
+		return new ResponseEntity<>(refreshTokenRes, HttpStatus.OK);
 	}
 
 	@GetMapping("/hello")
