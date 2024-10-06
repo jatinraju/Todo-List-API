@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.todo.dao.TodoDao;
@@ -18,94 +17,64 @@ import com.todo.pojo.TodoRes;
 @Component
 public class TodoDaoImpl implements TodoDao {
 
-	@Autowired
 	private TodoRepository todoRepo;
-
-	@Autowired
 	private ModelMapper modelMapper;
+
+	public TodoDaoImpl(TodoRepository todoRepo, ModelMapper modelMapper) {
+		super();
+		this.todoRepo = todoRepo;
+		this.modelMapper = modelMapper;
+	}
 
 	@Override
 	public TodoDTO addTodo(TodoDTO todoDto) {
-		System.out.println("TodoDaoImpl.addTodo() | todoDto: " + todoDto);
-
 		TodoEntity todoEntity = modelMapper.map(todoDto, TodoEntity.class);
-		System.out.println("Mapped TodoEntitny | todoEntity: " + todoEntity);
-
 		TodoEntity todoEntityRes = todoRepo.save(todoEntity);
-		System.out.println("Response from Database | todoEntityRes: " + todoEntityRes);
-
-		TodoDTO todoDtoRes = modelMapper.map(todoEntityRes, TodoDTO.class);
-		return todoDtoRes;
+		return modelMapper.map(todoEntityRes, TodoDTO.class);
 	}
 
 	@Override
 	public TodoDTO getTodoById(TodoDTO todoDto) {
-		System.out.println("TodoDaoImpl.getTodoById() | todoDto: " + todoDto);
-
 		Optional<TodoEntity> op = todoRepo.findById(todoDto.getId());
 		if (op.isPresent()) {
-			TodoDTO todoDtoRes = modelMapper.map(op.get(), TodoDTO.class);
-			System.out.println("Response From Database | todoDtoRes: +" + todoDtoRes);
-			return todoDtoRes;
+			return modelMapper.map(op.get(), TodoDTO.class);
 		}
 		return null;
 	}
 
 	@Override
 	public TodoDTO updateTodo(TodoDTO todoDto) {
-		System.out.println("TodoDaoImpl.updateTodo() | todoDto: " + todoDto);
-
 		Optional<TodoEntity> op = todoRepo.findById(todoDto.getId());
 		if (op.isPresent()) {
 			TodoEntity todoEntity = op.get();
 			todoEntity.setTitle(todoDto.getTitle());
 			todoEntity.setDescription(todoDto.getDescription());
-
 			TodoEntity todoEntityRes = todoRepo.save(todoEntity);
-			System.out.println("Updated TodoEntity in Database | todoEntityRes: " + todoEntityRes);
-
-			TodoDTO updatedTodoDto = modelMapper.map(todoEntityRes, TodoDTO.class);
-			return updatedTodoDto;
+			return modelMapper.map(todoEntityRes, TodoDTO.class);
 		}
-
 		return null;
 	}
 
 	@Override
 	public boolean deleteTodo(Long id) {
-		System.out.println("TodoDaoImpl.deleteTodo() | id: " + id);
-		Optional<TodoEntity> op = todoRepo.findById(id);
-		System.out.println("Todo found for deletion | op: " + op.get());
-
-		if (op.isPresent()) {
-			todoRepo.deleteById(id);
-			return true;
-		}
-		return false;
+		todoRepo.deleteById(id);
+		return true;
 	}
 
 	@Override
 	public AllTodoRes getAllTodos(Long userId, int page, int limit) {
-		System.out
-				.println("TodoDaoImpl.getAllTodos() | userId: " + userId + " || page: " + page + " || limit: " + limit);
-
 		List<Object[]> todosAndCount = todoRepo.getAllTodos(userId, page, limit);
 		return generateResponse(todosAndCount);
 	}
 
 	@Override
 	public AllTodoRes getAllFilteredTodos(Long userId, int page, int limit, String filter) {
-		System.out.println("TodoDaoImpl.getAllFilteredTodos() | userId: " + userId + " || page: " + page + " || limit: "
-				+ limit + " || filter: " + filter);
-
 		List<Object[]> filteredTodosAndCount = todoRepo.getAllFilteredTodos(userId, page, limit, filter);
 		return generateResponse(filteredTodosAndCount);
 	}
 
 	@Override
 	public AllTodoRes getAllSortedTodos(Long userId, int page, int limit, String odr) {
-		System.out.println("TodoDaoImpl.getAllSortedTodos() | userId: " + userId + " || page: " + page + " || limit: "
-				+ limit + " || odr: " + odr);
 		List<Object[]> sortedTodosAndCount;
 		if (odr.equalsIgnoreCase("asc")) {
 			sortedTodosAndCount = todoRepo.getAllSortedByTodosASC(userId, page, limit);
@@ -117,8 +86,6 @@ public class TodoDaoImpl implements TodoDao {
 
 	@Override
 	public AllTodoRes getAllFilteredAndSortedTodos(Long userId, int page, int limit, String filter, String odr) {
-		System.out.println("TodoDaoImpl.getAllFilteredAndSortedTodos() | userId: " + userId + " || page: " + page
-				+ " || limit: " + limit + " || filter: " + filter + " || odr: " + odr);
 		List<Object[]> filteredAndSortedTodosAndCount;
 		if (odr.equalsIgnoreCase("asc")) {
 			filteredAndSortedTodosAndCount = todoRepo.getAllFilteredAndSortedTodosASC(userId, page, limit, filter);
@@ -137,11 +104,9 @@ public class TodoDaoImpl implements TodoDao {
 						.description(entity[2].toString()).build();
 				finalList.add(todoRes);
 			}
-
 			long totalCount = ((Number) listOfObject.get(0)[listOfObject.get(0).length - 1]).longValue();
 			return AllTodoRes.builder().data(finalList).total(totalCount).build();
 		}
-		System.out.println("getting null????");
 		return null;
 	}
 

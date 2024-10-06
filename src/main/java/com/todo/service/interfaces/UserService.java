@@ -6,6 +6,7 @@ import com.todo.pojo.auth.AuthResponse;
 import com.todo.pojo.auth.RefreshTokenRes;
 
 public interface UserService {
+
 	UserDTO registerUser(UserDTO userDto);
 
 	AuthResponse authenticateUser(AuthRequestDTO authRequestDTO);

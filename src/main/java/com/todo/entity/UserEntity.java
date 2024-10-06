@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "users") // Name of the table in the database
+@Table(name = "users")
 @Data
 public class UserEntity {
 	@Id
@@ -25,5 +25,4 @@ public class UserEntity {
 	@Column(nullable = false)
 	private String password;
 
-	// Getters and Setters
 }

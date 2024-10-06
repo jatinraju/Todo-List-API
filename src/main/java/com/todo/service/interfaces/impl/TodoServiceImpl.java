@@ -1,77 +1,74 @@
 package com.todo.service.interfaces.impl;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.todo.constants.ErrorCodeEnum;
 import com.todo.dao.TodoDao;
 import com.todo.dao.UserDao;
 import com.todo.dto.TodoDTO;
 import com.todo.dto.UserDTO;
+import com.todo.exception.TodoServiceException;
+import com.todo.exception.UserServiceException;
 import com.todo.pojo.AllTodoRes;
 import com.todo.service.interfaces.TodoService;
 
 @Service
 public class TodoServiceImpl implements TodoService {
 
-	@Autowired
-	private ModelMapper modelMapper;
-
-	@Autowired
 	private UserDao userDao;
-
-	@Autowired
 	private TodoDao todoDao;
+
+	public TodoServiceImpl(UserDao userDao, TodoDao todoDao) {
+		super();
+		this.userDao = userDao;
+		this.todoDao = todoDao;
+	}
 
 	@Override
 	public TodoDTO addTodo(TodoDTO todoDto) {
-		System.out.println("TodoServiceImpl.addTodo() | todoDto: " + todoDto);
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		// TODO: add if user not found check;
 		UserDTO userDto = userDao.getUserByEmail(email);
+		if (userDto == null) {
+			throw new UserServiceException(ErrorCodeEnum.USER_NOT_FOUND.getCode(),
+					ErrorCodeEnum.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+		}
 		todoDto.setUserId(userDto.getId());
-
-		System.out.println("Todo Ready for DB | todoDto: " + todoDto);
-		// call db layer to get the full userDTO details
 		todoDto = todoDao.addTodo(todoDto);
 		return todoDto;
 	}
 
 	@Override
 	public TodoDTO updateTodo(TodoDTO todoDto) {
-		System.out.println("TodoServiceImpl.updateTodo() | todoDto: " + todoDto);
-		if (isMatchingTodoAndUser(todoDto)) {
-			return todoDao.updateTodo(todoDto);
-		}
-		System.out.println("user id mismatch with todo userid");
-		return null;
+		isMatchingTodoAndUser(todoDto);
+		return todoDao.updateTodo(todoDto);
 	}
 
 	@Override
 	public boolean deleteTodo(Long id) {
-		System.out.println("TodoServiceImpl.deleteTodo() | id: " + id);
 		TodoDTO tempTodoDto = TodoDTO.builder().id(id).build();
-
 		TodoDTO resTodoDto = todoDao.getTodoById(tempTodoDto);
-		if (resTodoDto != null && isMatchingTodoAndUser(resTodoDto)) {
-			boolean res = todoDao.deleteTodo(id);
-			return res;
+		if (resTodoDto == null) {
+			throw new TodoServiceException(ErrorCodeEnum.RESOURCE_NOT_FOUND.getCode(),
+					ErrorCodeEnum.RESOURCE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
 		}
 
-		// throw exception here todo not found or user idd not match with todo.
-		return false;
+		isMatchingTodoAndUser(resTodoDto);
+		return todoDao.deleteTodo(id);
 	}
 
 	@Override
 	public AllTodoRes getTodos(int page, int limit, String filter, String odr) {
-		System.out.println("TodoServiceImpl.getTodos() | page: " + page + " || limit: " + limit + " || filter: "
-				+ filter + " || odr: " + odr);
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserDTO userDto = userDao.getUserByEmail(email);
+		if (userDto == null) {
+			throw new UserServiceException(ErrorCodeEnum.USER_NOT_FOUND.getCode(),
+					ErrorCodeEnum.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+		}
 		page = (page - 1) * 10;
-		AllTodoRes allTodoRes;
 
+		AllTodoRes allTodoRes;
 		if ((filter == null || filter.isEmpty()) && (odr == null || odr.isEmpty())) {
 			allTodoRes = todoDao.getAllTodos(userDto.getId(), page, limit);
 		} else if (filter == null || filter.isEmpty()) {
@@ -88,19 +85,31 @@ public class TodoServiceImpl implements TodoService {
 			allTodoRes.setLimit(limit);
 			return allTodoRes;
 		}
-		return null;
+		throw new TodoServiceException(ErrorCodeEnum.RESOURCE_NOT_FOUND.getCode(),
+				ErrorCodeEnum.RESOURCE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
 	// Checking todo userid and user id is matching or not
 	public boolean isMatchingTodoAndUser(TodoDTO todoDto) {
-		System.out.println("TodoServiceImpl.isMatichingTodoAndUser() | todoDto: " + todoDto);
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		// Getting details of User and Todo from the Database;
 		UserDTO userDto = userDao.getUserByEmail(email);
-		TodoDTO oldTodoDto = todoDao.getTodoById(todoDto);
-		System.out.println("UserDTO: " + userDto + "\n TodoDTO: " + oldTodoDto);
+		if (userDto == null) {
+			throw new UserServiceException(ErrorCodeEnum.USER_NOT_FOUND.getCode(),
+					ErrorCodeEnum.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+		}
 
-		return oldTodoDto != null && userDto.getId().equals(oldTodoDto.getUserId());
+		TodoDTO oldTodoDto = todoDao.getTodoById(todoDto);
+		if (oldTodoDto == null) {
+			throw new TodoServiceException(ErrorCodeEnum.RESOURCE_NOT_FOUND.getCode(),
+					ErrorCodeEnum.RESOURCE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+		}
+
+		if (!userDto.getId().equals(oldTodoDto.getUserId())) {
+			throw new TodoServiceException(ErrorCodeEnum.UNAUTHORIZED_RESOURCE_ACCESS.getCode(),
+					ErrorCodeEnum.UNAUTHORIZED_RESOURCE_ACCESS.getMessage(), HttpStatus.UNAUTHORIZED);
+		}
+
+		return true;
 	}
 }

@@ -2,6 +2,10 @@ package com.todo.constants;
 
 public class TodoQueries {
 
+	private TodoQueries() {
+		super();
+	}
+
 	public static final String GET_ALL_TODOS = "WITH total_count AS ( SELECT COUNT(*) AS total FROM todo WHERE user_id = :id) "
 			+ "SELECT t.*, tc.total FROM todo t CROSS JOIN total_count tc WHERE t.user_id = :id LIMIT :l2 OFFSET :l1;";
 
