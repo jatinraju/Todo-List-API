@@ -140,7 +140,7 @@ You can test the following endpoints in your application:
 Dive into my Todo List API project at this `https://roadmap.sh/projects/todo-list-api`. Your support means the world to me, so if you appreciate my solution, I would be thrilled if you could upvote it!
 
 ### 🤝 Let’s Connect!  ###
-I’d love to connect with you on LinkedIn! `<a href="https://www.linkedin.com/in/jatinraju/">link</a>`
+I’d love to connect with you on LinkedIn! `https://www.linkedin.com/in/jatinraju/`
 
 ## Thank you for your support! ##
  
