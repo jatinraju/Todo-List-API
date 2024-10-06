@@ -85,7 +85,7 @@ To interact with the APIs provided in this project, follow these steps to set up
 - In the top right corner of Postman, click on the environment dropdown menu and select the imported environment.
 - Ensure the variables defined in `todo-api-environment.json` are set correctly, such as:<br>
 		`jwt_token`<br> `refresh_token`<br> 
-		*`Both values are initially null. When you call the `register` or `login` API, the application will inject the necessary values. This allows subsequent API calls to retrieve these values for authentication and user management.*`
+		*Both values are initially null. When you call the `register` or `login` API, the application will inject the necessary values. This allows subsequent API calls to retrieve these values for authentication and user management.*
 		
 ## How to Set Up Database
 - Open the MySQL Workbench.
